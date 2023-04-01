@@ -13,7 +13,9 @@ export default {
         const response = await axios.get('https://api.origamid.dev/stock/aapl/quote');
         console.log(response.data);
         this.dog = response.data;
+        this.$toast.success( "Busca completa", { position: "top-right", duration: 3000 })
       } catch (error) {
+        this.$toast.error( "Erro ao consumir API !", { position: "top-right", duration: 3000 })
         console.error(error);
       }
     },
