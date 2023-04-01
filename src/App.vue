@@ -42,7 +42,7 @@ header {
 
 .filters {  
   text-align: center;
-  background-color: #5f59ff;
+  background-color: #25272f;
   padding: 20px;
   border-radius: 5px;
 }

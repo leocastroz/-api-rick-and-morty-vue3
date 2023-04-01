@@ -1,10 +1,13 @@
 <template>
   <div>
     <div>
-      <label for="search">Search:</label>
-      <input type="text" v-model="search" id="search">
-      <button @click="applyFilter">Apply filter</button>
-      <h1>leonardo castro</h1>
+      <!-- <label for="search">Search:</label> -->
+      <!-- <input type="text" v-model="search" id="search"> -->
+      <!-- <button @click="applyFilter">Apply filter</button> -->
+
+      <br>
+      <br>
+      <br>
     </div>
 
 
@@ -13,8 +16,12 @@
     <div class="cimetri">
       <ul>
         <li v-for="(character, index) in filteredList" :key="index">
-          <img :src="character.image" alt="" srcset="" class="images">
-          <!-- {{ character.name }} -->
+          <div class="container">
+            <img :src="character.image" alt="" srcset="" class="images">
+            <p>{{ character.name }}</p>
+          </div>
+          
+          <!-- <pre>{{ character }}</pre> -->
         </li>
       </ul>
     </div>
@@ -44,11 +51,6 @@ export default {
           console.error(error);
         }
     },
-    applyFilter() {
-      this.filteredList = this.netpre.filter((character) => {
-        return character.name.toLowerCase().includes(this.search.toLowerCase())
-      })
-    },
   },
   computed: {
     filteredList() {
@@ -72,21 +74,41 @@ h1 {
   transition: transform 0.5s;
 }
 
-.images:hover {
-  transform: scale(1.1);
-  transition: 0.5s;
+
+.container {
+  width: 170px;
+  height: 170px;
+  border-radius: 8px;
+  transition: transform 0.5s;
 }
 
+.container:hover {
+  transform: scale(1.1);
+  transition: 0.5s;
+  box-shadow: 0px 0px 20px #a6a6a6;
+  cursor: pointer;
+}
 
 ul {
   list-style:none;
   display: grid;
   grid-template-columns:  auto auto auto auto;
-  gap: 20px;
+  gap: 30px;
 }
 .cimetri {
   padding: 50px 50px;
   border-radius: 10px;
-  background-color: rgb(26 27 33);
+  background-color: #25272f;
+}
+
+.cimetri p {
+  display: flex;
+  position: relative;
+  font-size: 13px;
+  color: #fff;
+  position: absolute;
+  background-color: #5f59ff;
+  margin-top: -40px;
+  margin-left: 40px;
 }
 </style> 
