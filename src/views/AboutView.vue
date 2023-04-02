@@ -5,7 +5,7 @@
         <span class="material-symbols-outlined">
           search
         </span>
-        <input type="text" v-model="search" id="search" placeholder="Buscar por nome">
+        <input type="text" v-model="search" id="search" placeholder="Search by name">
         <span class="clear-name" @click="clearName">x</span>
       </div>
       <select v-model="selectedSpecies" placeholder="selecione">
@@ -51,12 +51,20 @@
           <span class="close" @click="showImageModal = false">&times;</span>
         </div>
         <div class="data-user">
-          <img :src="selectedImage" alt="imagemModal" width="170" class="imagem-modal">
+          <div>
+            <img :src="selectedImage" alt="imagemModal" width="170" class="imagem-modal">
+          </div>
           <div class="dates">
-            <p>NAME: {{ selectedCharacter.name }}</p>
-            <p>SPECIE: {{ selectedCharacter.species }}</p>
-            <p>GENDER: {{ selectedCharacter.gender }}</p>
-            <p>STATUS: {{ selectedCharacter.status }}</p>
+            <h3>{{ selectedCharacter.name }}</h3>
+            <p>Origin: {{ selectedCharacter.origin.name }} - Status: {{ selectedCharacter.status }}</p>
+            <p>Species: {{ selectedCharacter.species }}</p>
+            <p>Last know location endpoint:</p>
+            <p>{{ selectedCharacter.location.name }}</p>
+            <br> <p :class="speciesStatusClass">Status: {{ selectedCharacter.status }}</p>
+            <h3>More info about the Origin Location:</h3>
+            <p>Name: {{ selectedCharacter.origin.name }}</p>
+            <p>Type: {{}}</p>
+            <p>Dimension: {{}}</p>
           </div>
         </div>
       </div>
@@ -111,6 +119,16 @@ export default {
       (!this.selectedSpecies || character.species === this.selectedSpecies),
     );
   },
+  speciesStatusClass() {
+    const speciesStatus = this.selectedCharacter.status;
+    if (speciesStatus === "Alive") {
+      return "alive";
+    } else if (speciesStatus === "Dead") {
+      return "dead";
+    } else {
+      return "unknown";
+    }
+  },
 },
   mounted() {
     this.getData()
@@ -119,9 +137,28 @@ export default {
 </script>
 
 <style scoped>
+
+.alive {
+  color: green;
+  background-color: green;
+}
+
+.dead {
+  color: red;
+  background-color: red;
+}
+
+.unknown {
+  color: gray;
+  background-color: gray;
+}
+
+.data-user div img {
+  box-shadow: 0px 0px 30px #9993ff;
+  margin: 30px;
+}
 .dates{
-  padding: 20px;
-  background-color: tomato;
+  margin: 30px;
   max-height: 150px;
 }
 
@@ -137,14 +174,13 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.651);
 }
 
 
 .modal-content {
   display: grid;
-  box-shadow: 0px 0px 100px #a6a6a6;
-  background-color: #25272f;
+  background-color: #18191e;
   border-radius: 5px;
   margin: 200px auto;
   width: 700px; 
@@ -160,15 +196,23 @@ export default {
 .header-close {
   display: flex;
   justify-content: end;
-  height: 30px;
+  height: 50px;
 }
 
 .data-user {
   margin-top: -150px;
   display: grid;
   justify-content: start;
-  grid-template-columns: auto auto;
-  background-color: blue;
+  grid-template-columns: auto auto auto auto;
+}
+
+.data-user h3{
+  color: #9993ff;
+  color: linear-gradient(100deg, rgba(153,147,255,1) 0%, #ac12ff 100%);
+}
+
+.data-user p {
+  color: #b5b5b5;
 }
 
 .modal-content p {
@@ -191,10 +235,12 @@ span {
 }
 
 select {
-  width: 100px;
-  height: 20px;
-
+  width: 105px;
+  height: 25px;
+  padding: 0 10px;
   border:none;
+  border-radius: 3px;
+  color: #949494;
 }
 
 input[type=text]{outline:none; font-family: 'Poppins', sans-serif;}
@@ -227,7 +273,7 @@ h2 {
   display: flex;
   align-items: center;
   color: #9993ff;
-  color: linear-gradient(100deg, rgba(153,147,255,1) 0%, rgb(172, 18, 255) 100%);
+  color: linear-gradient(100deg, rgba(153,147,255,1) 0%, #ac12ff 100%);
 }
 
 h2 span {
