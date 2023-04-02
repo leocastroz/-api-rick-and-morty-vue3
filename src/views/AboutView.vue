@@ -6,6 +6,7 @@
           search
         </span>
         <input type="text" v-model="search" id="search" placeholder="Buscar por nome">
+        <span class="clear-name" @click="clearName">x</span>
       </div>
       <select v-model="selectedSpecies" placeholder="selecione">
         <option value="">All species</option>
@@ -16,17 +17,51 @@
     <p v-if="netpre.length === 0">No results found</p>
 
     <div class="cimetri">
+
       <ul v-if="filteredList.length">
         <li v-for="(character, index) in filteredList" :key="index">
           <div class="container">
-            <img :src="character.image" alt="" srcset="" class="images">
-            <p>{{ character.name }}</p>
-            <span>{{ character.species }}</span>
+            <img 
+              :src="character.image" 
+              alt="" 
+              srcset="" 
+              class="images" 
+              @click="showModal(character.image, character)"
+            >
+            <div class="info-personal">
+              <p>{{ character.name }}</p> 
+              <div> 
+                <h6>{{ character.species }}</h6>
+              </div>
+            </div>
           </div>
         </li>
       </ul>
-      <h1 v-else>No results found</h1>
+
+      <h2 v-else>
+        <span class="material-symbols-outlined">
+          error
+        </span>
+        No results found</h2>
     </div>
+
+    <div v-if="showImageModal" class="modal">
+      <div class="modal-content">
+        <div class="header-close">
+          <span class="close" @click="showImageModal = false">&times;</span>
+        </div>
+        <div class="data-user">
+          <img :src="selectedImage" alt="imagemModal" width="170" class="imagem-modal">
+          <div class="dates">
+            <p>NAME: {{ selectedCharacter.name }}</p>
+            <p>SPECIE: {{ selectedCharacter.species }}</p>
+            <p>GENDER: {{ selectedCharacter.gender }}</p>
+            <p>STATUS: {{ selectedCharacter.status }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -36,19 +71,30 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      netpre: [],
-      filteredList: [],
-      search: '',
+      selectedCharacter: {},
+      showImageModal: false,
       selectedSpecies: null,
+      selectedImage: null,
+      filteredList: [],
+      netpre: [],
+      search: '',
     }
   },
   methods:{
-      async getDog() {
+    showModal(image, character) {
+      this.showImageModal = true;
+      this.selectedImage = image;
+      this.selectedCharacter = character;
+    },
+    clearName() {
+        this.search = ''
+    },
+      async getData() {
         try {
           const response = await axios.get('https://rickandmortyapi.com/api/character');
           console.log(response.data);
           this.netpre = response.data.results;
-          this.$toast.success( "API TROUXE OS DADOS", { position: "top-right", duration: 5000, background: "#7a78fe" })
+          this.$toast.success( "API TROUXE OS DADOS", { position: "top-right", duration: 5000 })
         } catch (error) {
           this.$toast.error( "Erro ao consumir API !", { position: "top-right", duration: 3000 })
           console.error(error);
@@ -63,17 +109,80 @@ export default {
     return this.netpre.filter(character =>
       character.name.toLowerCase().includes(this.search.toLowerCase()) &&
       (!this.selectedSpecies || character.species === this.selectedSpecies),
-      
     );
   },
 },
   mounted() {
-    this.getDog()
+    this.getData()
   },
 }
 </script>
 
 <style scoped>
+.dates{
+  padding: 20px;
+  background-color: tomato;
+  max-height: 150px;
+}
+
+.imagem-modal {
+  border-radius: 10px;
+}
+
+.modal {
+  display: flex;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+
+.modal-content {
+  display: grid;
+  box-shadow: 0px 0px 100px #a6a6a6;
+  background-color: #25272f;
+  border-radius: 5px;
+  margin: 200px auto;
+  width: 700px; 
+  height: 400px;
+}
+
+.modal-content span {
+  font-size: 20px;
+  cursor: pointer;
+  margin: 10px 20px 0 0;
+}
+
+.header-close {
+  display: flex;
+  justify-content: end;
+  height: 30px;
+}
+
+.data-user {
+  margin-top: -150px;
+  display: grid;
+  justify-content: start;
+  grid-template-columns: auto auto;
+  background-color: blue;
+}
+
+.modal-content p {
+  color: #f1f1f1;
+  font-weight: 200;
+}
+
+.clear-name {
+  color: #b5b5b5;
+  font-weight: bold;
+  margin-left: 5px;
+  cursor: pointer;
+  user-select: none;
+}
 
 span {
   color: #b5b5b5;
@@ -84,8 +193,8 @@ span {
 select {
   width: 100px;
   height: 20px;
-  border-style: none;
-  border:none
+
+  border:none;
 }
 
 input[type=text]{outline:none; font-family: 'Poppins', sans-serif;}
@@ -112,6 +221,17 @@ input[type=text]{outline:none; font-family: 'Poppins', sans-serif;}
   margin: 20px 0;
   padding: 30px;
   display: flex;
+}
+
+h2 {
+  display: flex;
+  align-items: center;
+  color: #9993ff;
+  color: linear-gradient(100deg, rgba(153,147,255,1) 0%, rgb(172, 18, 255) 100%);
+}
+
+h2 span {
+  margin-right: 10px;
 }
 
 input {
@@ -152,18 +272,33 @@ ul {
 }
 .cimetri {
   padding: 50px 50px;
-  border-radius: 10px;
+  border-radius: 5px;
   background-color: #25272f;
 }
 
-.cimetri p {
+.info-personal {
   display: flex;
   position: relative;
+  justify-content: space-around;
+  align-items: center;
   font-size: 13px;
   color: #fff;
-  position: absolute;
+  background-color: #2d2d2d8b;
+  margin-top: -66px;
+  border-radius: 0px 0px 8px 8px;
+  width: 170px;
+  height: 60px;
+}
+
+.info-personal p {
+  color: #f1f1f1;
+  font-weight: 200;
+}
+
+.info-personal h6 {
   background-color: #9993ff;
-  margin-top: -40px;
-  margin-left: 40px;
+  color: #fff;
+  border-radius: 2px;
+  padding: 3px;
 }
 </style> 
