@@ -138,7 +138,8 @@ export default {
           const response = await axios.get('https://rickandmortyapi.com/api/character');
           console.log(response.data);
           this.netpre = response.data.results;
-          this.$toast.success( "API TROUXE OS DADOS", { position: "top-right", duration: 5000 })
+          this.$toast.info( "🔔 welcome to my project - rick and morty 👀 ", { position: "top-left", duration: 7000 })
+          // this.$toast.info( "Success in bringing data", { position: "top-left", duration: 8000 })
         } catch (error) {
           this.$toast.error( "Erro ao consumir API !", { position: "top-right", duration: 3000 })
           console.error(error);
