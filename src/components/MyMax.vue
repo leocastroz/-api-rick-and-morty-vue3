@@ -1,7 +1,7 @@
 <template>
     <div>
       <a href="https://github.com/leocastroz" target="_blank">leocastroz</a>
-      <img src="https://cdn3d.iconscout.com/3d/free/thumb/github-1-5645865-4695723.png?f=webp" alt="github" width="40">
+      <img src="https://avatars.githubusercontent.com/u/72839343?v=4" alt="github" width="40">
     </div>
 </template>
 
@@ -26,6 +26,11 @@ div {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+div img {
+  margin: 0 0 0 10px;
+  border-radius: 100%;
 }
 
 p {

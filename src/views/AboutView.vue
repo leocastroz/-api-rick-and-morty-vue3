@@ -8,10 +8,21 @@
         <input type="text" v-model="search" id="search" placeholder="Search by name">
         <span class="clear-name" @click="clearName">x</span>
       </div>
-      <select v-model="selectedSpecies" placeholder="selecione">
-        <option value="">All species</option>
-        <option v-for="option in speciesOptions" :value="option">{{ option }}</option>
-      </select>
+      <div class="selects">
+        <select v-model="selectedStatus">
+          <option value="">All Status</option>
+          <option v-for="option in statusOptions" :value="option">{{ option }}</option>
+        </select>
+        <select v-model="selectedSpecies">
+          <option value="">All species</option>
+          <option v-for="option in speciesOptions" :value="option">{{ option }}</option>
+        </select>
+        <select v-model="selectedGender">
+          <option value="">All Genres</option>
+          <option v-for="option in genderOptions" :value="option">{{ option }}</option>
+        </select>  
+      </div>
+    
     </div>
 
     <p v-if="netpre.length === 0">No results found</p>
@@ -42,8 +53,12 @@
         <span class="material-symbols-outlined">
           error
         </span>
-        No results found</h2>
+        No results found
+      </h2>
+
     </div>
+
+
 
     <div v-if="showImageModal" class="modal">
       <div class="modal-content">
@@ -53,18 +68,37 @@
         <div class="data-user">
           <div>
             <img :src="selectedImage" alt="imagemModal" width="170" class="imagem-modal">
+            <div class="state-person">
+              <span :class="speciesStatusClass" class="material-symbols-rounded" id="status">
+                radio_button_unchecked
+              </span>
+              <p>{{ selectedCharacter.status }}</p>
+            </div>
+            <div>
+              <p><span class="material-symbols-outlined">
+                person
+                </span> {{ selectedCharacter.name }}</p>
+              <p><span class="material-symbols-outlined">
+                public
+                </span>Origin: {{ selectedCharacter.origin.name }}</p>
+              <p><span class="material-symbols-outlined">
+                microbiology
+                </span> {{ selectedCharacter.species }}</p>
+              <p><span class="material-symbols-outlined">
+                person_search
+                </span> {{ selectedCharacter.gender }}</p>
+            </div>
           </div>
           <div class="dates">
-            <h3>{{ selectedCharacter.name }}</h3>
-            <p>Origin: {{ selectedCharacter.origin.name }} - Status: {{ selectedCharacter.status }}</p>
-            <p>Species: {{ selectedCharacter.species }}</p>
-            <p>Last know location endpoint:</p>
+            <h3>Last know location endpoint:</h3>
             <p>{{ selectedCharacter.location.name }}</p>
-            <br> <p :class="speciesStatusClass">Status: {{ selectedCharacter.status }}</p>
-            <h3>More info about the Origin Location:</h3>
-            <p>Name: {{ selectedCharacter.origin.name }}</p>
-            <p>Type: {{}}</p>
-            <p>Dimension: {{}}</p>
+            <br>
+            <h3>Episodes that {{ selectedCharacter.name }} has been in:</h3>   
+
+            <p :style="{color: '#b5b5b5', marginTop: '10px', fontSize: '13px', textAlign: 'justify' }">
+              {{ episodeIds }}
+            </p>
+
           </div>
         </div>
       </div>
@@ -81,7 +115,9 @@ export default {
     return {
       selectedCharacter: {},
       showImageModal: false,
-      selectedSpecies: null,
+      selectedSpecies: '',
+      selectedStatus: '',
+      selectedGender: '',
       selectedImage: null,
       filteredList: [],
       netpre: [],
@@ -110,13 +146,27 @@ export default {
     },
   },
   computed: {
+    episodeIds() {
+    return this.selectedCharacter.episode.map((link) => {
+      const id = ' Ep.' + link.match(/\d+/)[0];
+      return id;
+    }).join(' ');
+  },
+  statusOptions() {
+    return [...new Set(this.netpre.map(character => character.status))];
+  },
   speciesOptions() {
     return [...new Set(this.netpre.map(character => character.species))];
+  },
+  genderOptions() {
+    return [...new Set(this.netpre.map(character => character.gender))];
   },
   filteredList() {
     return this.netpre.filter(character =>
       character.name.toLowerCase().includes(this.search.toLowerCase()) &&
-      (!this.selectedSpecies || character.species === this.selectedSpecies),
+      (!this.selectedSpecies || character.species === this.selectedSpecies) && 
+      (!this.selectedGender || character.gender === this.selectedGender) &&
+      (!this.selectedStatus || character.status === this.selectedStatus),
     );
   },
   speciesStatusClass() {
@@ -138,26 +188,46 @@ export default {
 
 <style scoped>
 
+.selects select {
+  margin: 0 0 0 20px;
+}
+
+.state-person {
+  display: flex;
+  align-items: center;
+  margin: -20px 0 0 30px;
+  align-items: center;
+}
+
+.state-person #status {
+  margin: 0 5px 0 0;
+  border-radius: 100%;
+  font-size: 12px;
+}
+
 .alive {
-  color: green;
-  background-color: green;
+  background: -webkit-linear-gradient(#d4d4d4, #00dc00);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .dead {
-  color: red;
-  background-color: red;
+  background: -webkit-linear-gradient(#eee, #ff0000);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .unknown {
-  color: gray;
-  background-color: gray;
+  background: -webkit-linear-gradient(#eee, #333);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .data-user div img {
-  box-shadow: 0px 0px 30px #9993ff;
+  box-shadow: 0px 0px 20px #a6a6a6;
   margin: 30px;
 }
-.dates{
+.dates {
   margin: 30px;
   max-height: 150px;
 }
@@ -184,19 +254,24 @@ export default {
   border-radius: 5px;
   margin: 200px auto;
   width: 700px; 
-  height: 400px;
+  height: 450px;
 }
 
-.modal-content span {
+.modal-content .close {
   font-size: 20px;
   cursor: pointer;
   margin: 10px 20px 0 0;
+  position: absolute;
+}
+
+.modal-content .close:hover {
+  color: #9993ff;
 }
 
 .header-close {
   display: flex;
   justify-content: end;
-  height: 50px;
+  height: 45px;
 }
 
 .data-user {
