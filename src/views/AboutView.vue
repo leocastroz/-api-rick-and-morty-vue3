@@ -28,7 +28,6 @@
     <p v-if="netpre.length === 0">No results found</p>
 
     <div class="cimetri">
-
       <ul v-if="filteredList.length">
         <li v-for="(character, index) in filteredList" :key="index">
           <div class="container">
@@ -66,15 +65,17 @@
           <span class="close" @click="showImageModal = false">&times;</span>
         </div>
         <div class="data-user">
-          <div>
-            <img :src="selectedImage" alt="imagemModal" width="170" class="imagem-modal">
-            <div class="state-person">
-              <span :class="speciesStatusClass" class="material-symbols-rounded" id="status">
-                radio_button_unchecked
-              </span>
-              <p>{{ selectedCharacter.status }}</p>
-            </div>
+          <div class="left-data">
             <div>
+              <img :src="selectedImage" alt="imagemModal" width="170" class="imagem-modal">
+              <div class="state-person">
+                <span :class="speciesStatusClass" class="material-symbols-rounded" id="status">
+                  radio_button_unchecked
+                </span>
+                <p>{{ selectedCharacter.status }}</p>
+              </div>
+            </div>
+            <div class="status-person">
               <p><span class="material-symbols-outlined">
                 person
                 </span> {{ selectedCharacter.name }}</p>
@@ -228,6 +229,23 @@ export default {
   box-shadow: 0px 0px 20px #a6a6a6;
   margin: 30px;
 }
+
+.data-user .status-person {
+  margin: 20px;
+}
+
+.data-user .status-person p {
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.data-user .status-person span {
+  margin: 0 5px;
+  color: #9993ff;
+}
+
 .dates {
   margin: 30px;
   max-height: 150px;
@@ -245,7 +263,7 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.651);
+  background-color: rgba(0, 0, 0, 0.483);
 }
 
 
@@ -256,12 +274,13 @@ export default {
   margin: 200px auto;
   width: 700px; 
   height: 450px;
+  padding: 100px 0;
 }
 
 .modal-content .close {
   font-size: 20px;
   cursor: pointer;
-  margin: 10px 20px 0 0;
+  margin: -80px 20px 0 0;
   position: absolute;
 }
 
@@ -290,7 +309,7 @@ export default {
 .data-user p {
   color: #b5b5b5;
 }
-
+            
 .modal-content p {
   color: #f1f1f1;
   font-weight: 200;
@@ -342,7 +361,20 @@ input[type=text]{outline:none; font-family: 'Poppins', sans-serif;}
   border-radius: 5px;
   margin: 20px 0;
   padding: 30px;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+@media (max-width: 768px) {
+  .search {
+    margin: 10px 0;
+    justify-content: center;
+    grid-template-columns: auto; 
+  }
+
+  .search .buscar {
+    margin: 0 auto 20px auto;
+  }
 }
 
 h2 {
@@ -391,12 +423,67 @@ ul {
   display: grid;
   grid-template-columns:  auto auto auto auto;
   gap: 30px;
+  justify-content: center;
 }
 .cimetri {
-  padding: 50px 50px;
+ 
+  padding: 50px 0px;
   border-radius: 5px;
   background-color: #25272f;
+  max-width: 900px;
 }
+
+.cimetri ul {
+
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cimetri ul .container {
+  flex: 1 1 200px;
+}
+
+
+@media (max-width: 768px) {
+  .cimetri  {
+    flex: 2 1 100px; /* Ajusta a base para 50% em telas menores */
+  }
+}
+
+@media (max-width: 500px) {
+  .data-user  {
+    margin-top: -150px;
+    display: grid;
+    grid-template-columns: auto;
+  }
+  .data-user .left-data {
+    display: flex;
+  }
+
+  .data-user .left-data img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .data-user .left-data {
+    display: flex;
+  }
+
+  .modal-content {
+    margin-top: 100px;
+    height: 600px;
+  }
+
+  .data-user .status-person span {
+    margin-left: -25px;
+    font-size: 13px;
+  }
+
+  .data-user .dates h3 {
+    font-size: 16px;
+  }
+}
+
 
 .info-personal {
   display: flex;
