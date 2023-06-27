@@ -1,6 +1,11 @@
 <template>
   <div>
     <div class="search">
+      <div class="pagination">
+        <button @click="goToPreviousPage" :disabled="currentPage === 1">Previous</button>
+        <span>{{ currentPage }} / {{ totalPages }}</span>
+        <button @click="goToNextPage" :disabled="currentPage === totalPages">Next</button>
+      </div>
       <div class="buscar">
         <span class="material-symbols-outlined">
           search
@@ -123,6 +128,10 @@ export default {
       filteredList: [],
       netpre: [],
       search: '',
+      currentPage: 1,
+      pageSize: 20,
+      totalItems: 0,
+      totalPages: 0,
     }
   },
   methods:{
@@ -134,17 +143,31 @@ export default {
     clearName() {
         this.search = ''
     },
-      async getData() {
-        try {
-          const response = await axios.get('https://rickandmortyapi.com/api/character');
-          console.log(response.data);
-          this.netpre = response.data.results;
-          this.$toast.info( "🔔 welcome to my project - rick and morty 👀 ", { position: "top-left", duration: 7000 })
-          // this.$toast.info( "Success in bringing data", { position: "top-left", duration: 8000 })
-        } catch (error) {
-          this.$toast.error( "Erro ao consumir API !", { position: "top-right", duration: 3000 })
-          console.error(error);
-        }
+    goToNextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.getData();
+      }
+    },
+    goToPreviousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.getData();
+      }
+    },
+    async getData() {
+      try {
+        const response = await axios.get('https://rickandmortyapi.com/api/character', {
+          params: {
+            page: this.currentPage,
+          },
+        });
+        this.netpre = response.data.results;
+        this.totalItems = response.data.info.count;
+        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
   computed: {
