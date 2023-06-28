@@ -7,12 +7,12 @@
         <button @click="goToNextPage" :disabled="currentPage === totalPages">Next</button>
       </div>
       <div class="buscar">
-        <span class="material-symbols-outlined">
-          search
-        </span>
-        <input type="text" v-model="search" id="search" placeholder="Search by name">
+        <input type="text" v-model="searchTerm" placeholder="Digite o nome do personagem" />
+        <!-- <input type="text" v-model="search" id="search" -->
         <span class="clear-name" @click="clearName">x</span>
+        <button @click="busca">Pesquisar</button>
       </div>
+
       <div class="selects">
         <select v-model="selectedStatus">
           <option value="">All Status</option>
@@ -34,7 +34,7 @@
 
     <div class="cimetri">
       <ul v-if="filteredList.length">
-        <li v-for="(character, index) in filteredList" :key="index">
+        <li v-for="character in characters" :key="character.id">
           <div class="container">
             <img 
               :src="character.image" 
@@ -61,8 +61,6 @@
       </h2>
 
     </div>
-
-
 
     <div v-if="showImageModal" class="modal">
       <div class="modal-content">
@@ -119,6 +117,8 @@ import axios from 'axios'
 export default {
   data() {
     return {
+      searchTerm: '',
+      characters: [],
       selectedCharacter: {},
       showImageModal: false,
       selectedSpecies: '',
@@ -127,7 +127,6 @@ export default {
       selectedImage: null,
       filteredList: [],
       netpre: [],
-      search: '',
       currentPage: 1,
       pageSize: 20,
       totalItems: 0,
@@ -135,13 +134,27 @@ export default {
     }
   },
   methods:{
+    busca() {
+      const endpoint = 'https://rickandmortyapi.com/api/character/';
+      const params = {
+        name: this.searchTerm,
+      };
+
+      axios.get(endpoint, { params })
+        .then(response => {
+          this.characters = response.data.results;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
     showModal(image, character) {
       this.showImageModal = true;
       this.selectedImage = image;
       this.selectedCharacter = character;
     },
     clearName() {
-        this.search = ''
+        this.searchTerm = ''
     },
     goToNextPage() {
       if (this.currentPage < this.totalPages) {
@@ -188,7 +201,7 @@ export default {
   },
   filteredList() {
     return this.netpre.filter(character =>
-      character.name.toLowerCase().includes(this.search.toLowerCase()) &&
+      character.name.toLowerCase().includes(this.searchTerm.toLowerCase()) &&
       (!this.selectedSpecies || character.species === this.selectedSpecies) && 
       (!this.selectedGender || character.gender === this.selectedGender) &&
       (!this.selectedStatus || character.status === this.selectedStatus),
